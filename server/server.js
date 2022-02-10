@@ -11,7 +11,6 @@ app.use(bodyParser.urlencoded({ extended: false }));
 const PORT = 3000;
 
 let clients = [];
-let facts = [];
 
 app.get("/status", (_, response) => response.json({ clients: clients.length }));
 
@@ -27,7 +26,7 @@ function eventsHandler(request, response) {
   };
   response.writeHead(200, headers);
 
-  const data = `data: ${JSON.stringify(facts)}\n\n`;
+  const data = `data: ${JSON.stringify(null)}\n\n`;
 
   response.write(data);
 
@@ -53,16 +52,10 @@ function sendEventsToAll(newFact) {
   clients.forEach((client) => client.response.write(data));
 }
 
-function sendAllUpdatedFactEventsToAll() {
-  const data = `data: ${JSON.stringify(facts)}\n\n`;
-  clients.forEach((client) => client.response.write(data));
-}
-
 async function addFact(request, respsonse) {
   const newFact = request.body;
-  facts.push(newFact);
   respsonse.json(newFact);
-  return sendAllUpdatedFactEventsToAll();
+  return sendEventsToAll(newFact);
 }
 
 app.post("/fact", addFact);

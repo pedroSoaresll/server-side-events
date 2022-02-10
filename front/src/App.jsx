@@ -8,8 +8,10 @@ function App() {
     const events = new EventSource("http://localhost:3000/events");
     events.onmessage = (e) => {
       const data = JSON.parse(e.data);
-      console.log(data);
-      setInfo(data);
+
+      if (!data) return;
+
+      setInfo((state) => [...state, data]);
     };
 
     return () => events?.close();
